@@ -1,0 +1,19 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "7FATW3BH8T.io.privus.bubble",
+                "paths": [
+                    "*"
+                ]
+            },
+            {
+                "appID": "AD5SBJY33A.io.privus.bubble",
+                "paths": [
+                    "*"
+                ]
+            }
+        ]
+    }
+}

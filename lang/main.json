@@ -16,19 +16,19 @@
         "inviteMoreMailSubject": "Join {{appName}} meeting",
         "inviteMorePrompt": "Invite more people",
         "linkCopied": "Link copied to clipboard",
-        "loading": "Searching for people and phone numbers",
-        "loadingNumber": "Validating phone number",
+        "loading": "Searching for people and SecurLine numbers",
+        "loadingNumber": "Validating SecurLine number",
         "loadingPeople": "Searching for people to invite",
         "noResults": "No matching search results",
-        "noValidNumbers": "Please enter a phone number",
+        "noValidNumbers": "Please enter a SecurLine number",
         "outlookEmail": "Outlook Email",
-        "searchNumbers": "Add phone numbers",
+        "searchNumbers": "Add SecurLine numbers",
         "searchPeople": "Search for people",
-        "searchPeopleAndNumbers": "Search for people or add their phone numbers",
+        "searchPeopleAndNumbers": "Search for people or add their SecurLine numbers",
         "shareInvite": "Share meeting invitation",
         "shareLink": "Share the meeting link to invite others",
         "shareStream": "Share the live streaming link",
-        "telephone": "Telephone: {{number}}",
+        "telephone": "SecurLine: {{number}}",
         "title": "Invite people to this meeting",
         "yahooEmail": "Yahoo Email"
     },
@@ -44,7 +44,7 @@
     },
     "calendarSync": {
         "addMeetingURL": "Add a meeting link",
-        "confirmAddLink": "Do you want to add a Jitsi link to this event?",
+        "confirmAddLink": "Do you want to add a SecurVid link to this event?",
         "error": {
             "appConfiguration": "Calendar integration is not properly configured.",
             "generic": "An error has occurred. Please check your calendar settings or try refreshing the calendar.",
@@ -153,7 +153,7 @@
         "tryAgainButton": "Try again in desktop"
     },
     "defaultLink": "e.g. {{url}}",
-    "defaultNickname": "ex. Jane Pink",
+    "defaultNickname": "ex. John Doe",
     "deviceError": {
         "cameraError": "Failed to access your camera",
         "cameraPermission": "Error obtaining camera permission",
@@ -202,7 +202,7 @@
         "dismiss": "Dismiss",
         "displayNameRequired": "Hi! What’s your name?",
         "done": "Done",
-        "e2eeDescription": "End-to-End Encryption is currently EXPERIMENTAL. Please keep in mind that turning on end-to-end encryption will effectively disable server-side provided services such as: recording, live streaming and phone participation. Also keep in mind that the meeting will only work for people joining from browsers with support for insertable streams.",
+        "e2eeDescription": "End-to-End Encryption is currently EXPERIMENTAL. Please keep in mind that turning on end-to-end encryption will effectively disable server-side provided services such as: recording, live streaming and SecurLine participation.",
         "e2eeLabel": "Enable End-to-End Encryption",
         "e2eeWarning": "WARNING: Not all participants in this meeting seem to have support for End-to-End encryption. If you enable it they won't be able to see nor hear you.",
         "enterDisplayName": "Please enter your name here",
@@ -313,8 +313,8 @@
         "unlockRoom": "Remove meeting $t(lockRoomPassword)",
         "user": "user",
         "userPassword": "user password",
-        "WaitForHostMsg": "The conference <b>{{room}}</b> has not yet started. If you are the host then please authenticate. Otherwise, please wait for the host to arrive.",
-        "WaitForHostMsgWOk": "The conference <b>{{room}}</b> has not yet started. If you are the host then please press Ok to authenticate. Otherwise, please wait for the host to arrive.",
+        "WaitForHostMsg": "The SecurVid meeting <b>{{room}}</b> hasn't started. If you are the host then login. If you're a guest wait for the host to arrive.",
+        "WaitForHostMsgWOk": "The SecurVid meeting <b>{{room}}</b> hasn't started. If you are the host click on OK. If you're a guest wait for the host to arrive.",
         "WaitingForHost": "Waiting for the host ...",
         "Yes": "Yes",
         "yourEntireScreen": "Your entire screen"
@@ -326,7 +326,7 @@
         "title": "Shared Document"
     },
     "e2ee": {
-        "labelToolTip": "Audio and Video Communication on this call is end-to-end encrypted"
+        "labelToolTip": "This SecurVid meeting is end-to-end encrypted"
     },
     "embedMeeting": {
         "title": "Embed this meeting"
@@ -344,7 +344,7 @@
         "answer": "Answer",
         "audioCallTitle": "Incoming call",
         "decline": "Dismiss",
-        "productLabel": "from Jitsi Meet",
+        "productLabel": "from SecurVid",
         "videoCallTitle": "Incoming video call"
     },
     "info": {
@@ -380,9 +380,9 @@
     "inviteDialog": {
         "alertText": "Failed to invite some participants.",
         "header": "Invite",
-        "searchCallOnlyPlaceholder": "Enter phone number",
+        "searchCallOnlyPlaceholder": "Enter SecurLine number",
         "searchPeopleOnlyPlaceholder": "Search for participants",
-        "searchPlaceholder": "Participant or phone number",
+        "searchPlaceholder": "Participant or SecurLine number",
         "send": "Send"
     },
     "inlineDialogFailure": {
@@ -506,7 +506,7 @@
         "newDeviceAudioTitle": "New audio device detected",
         "newDeviceAction": "Use",
         "OldElectronAPPTitle": "Security vulnerability!",
-        "oldElectronClientDescription1": "You appear to be using an old version of the Jitsi Meet client which has known security vulnerabilities. Please make sure you update to our ",
+        "oldElectronClientDescription1": "You appear to be using an old version of the SecurVid client which has known security vulnerabilities. Please make sure you update to our ",
         "oldElectronClientDescription2": "latest build",
         "oldElectronClientDescription3": " now!"
     },
@@ -520,7 +520,7 @@
         "audioTrackError": "Could not create audio track.",
         "calling": "Calling",
         "callMe": "Call me",
-        "callMeAtNumber": "Call me at this number:",
+        "callMeAtNumber": "Call me at this SecurLine number:",
         "configuringDevices": "Configuring devices...",
         "connectedWithAudioQ": "You’re connected with audio?",
         "connection": {
@@ -626,7 +626,7 @@
     },
     "security": {
         "about": "You can add a $t(lockRoomPassword) to your meeting. Participants will need to provide the $t(lockRoomPassword) before they are allowed to join the meeting.",
-        "aboutReadOnly": "Moderator participants can add a $t(lockRoomPassword) to the meeting. Participants will need to provide the $t(lockRoomPassword) before they are allowed to join the meeting.",
+        "aboutReadOnly": "Moderators can add a $t(lockRoomPassword) to the meeting. Participants will need to provide the $t(lockRoomPassword) before they are allowed to join the meeting.",
         "insecureRoomNameWarning": "The room name is unsafe. Unwanted participants may join your conference. Consider securing your meeting using the security button.",
         "securityOptions": "Security options"
     },
@@ -679,7 +679,7 @@
     },
     "share": {
         "dialInfoText": "\n\n=====\n\nJust want to dial in on your phone?\n\n{{defaultDialInNumber}}Click this link to see the dial in phone numbers for this meeting\n{{dialInfoPageUrl}}",
-        "mainText": "Click the following link to join the meeting:\n{{roomUrl}}"
+        "mainText": "Click the following link to join the SecurVid meeting:\n{{roomUrl}}"
     },
     "speaker": "Speaker",
     "speakerStats": {
@@ -883,7 +883,7 @@
             "join": "Tap to join",
             "roomname": "Enter room name"
         },
-        "appDescription": "Go ahead, video chat with the whole team. In fact, invite everyone you know. {{app}} is a fully encrypted, 100% open source video conferencing solution that you can use all day, every day, for free — with no account needed.",
+        "appDescription": "{{app}} is a fully encrypted, 100% open source based secure and private video conferencing solution.",
         "audioVideoSwitch": {
             "audio": "Voice",
             "video": "Video"
@@ -895,11 +895,11 @@
         "getHelp": "Get help",
         "go": "GO",
         "goSmall": "GO",
-        "headerTitle": "Jitsi Meet",
-        "headerSubtitle": "Secure and high quality meetings",
+        "headerTitle": "SecurVid",
+        "headerSubtitle": "Secure, encrypted and high quality meetings",
         "info": "Dial-in info",
         "join": "CREATE / JOIN",
-        "jitsiOnMobile": "Jitsi on mobile – download our apps and start a meeting from anywhere",
+        "jitsiOnMobile": "SecurVid on mobile – download our apps and start a meeting from anywhere",
         "moderatedMessage": "Or <a href=\"{{url}}\" rel=\"noopener noreferrer\" target=\"_blank\">book a meeting URL</a> in advance where you are the only moderator.",
         "privacy": "Privacy",
         "recentList": "Recent",
@@ -908,15 +908,15 @@
         "reducedUIText": "Welcome to {{app}}!",
         "roomNameAllowedChars": "Meeting name should not contain any of these characters: ?, &, :, ', \", %, #.",
         "roomname": "Enter room name",
-        "roomnameHint": "Enter the name or URL of the room you want to join. You may make a name up, just let the people you are meeting know it so that they enter the same name.",
+        "roomnameHint": "Enter the name or the full link of the room you want to join. You may make a name up, just let the people you are meeting know it so that they enter the same name.",
         "sendFeedback": "Send feedback",
         "startMeeting": "Start meeting",
         "terms": "Terms",
-        "title": "Secure, fully featured, and completely free video conferencing"
+        "title": "Secure, fully featured, and private video conferencing"
     },
     "lonelyMeetingExperience": {
         "button": "Invite others",
-        "youAreAlone": "You are the only one in the meeting"
+        "youAreAlone": "You are the only one in the SecurVid meeting so far"
     },
     "helpView": {
         "header": "Help center"

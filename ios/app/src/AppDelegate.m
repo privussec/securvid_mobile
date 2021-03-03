@@ -30,18 +30,19 @@
     JitsiMeet *jitsiMeet = [JitsiMeet sharedInstance];
 
     jitsiMeet.conferenceActivityType = JitsiMeetConferenceActivityType;
-    jitsiMeet.customUrlScheme = @"org.jitsi.meet";
-    jitsiMeet.universalLinkDomains = @[@"meet.jit.si", @"alpha.jitsi.net", @"beta.meet.jit.si"];
+    jitsiMeet.customUrlScheme = @"io.privus.bubble";
+    jitsiMeet.universalLinkDomains = @[@"sv.privus.io", @"bubble.privus.pt"];
 
     jitsiMeet.defaultConferenceOptions = [JitsiMeetConferenceOptions fromBuilder:^(JitsiMeetConferenceOptionsBuilder *builder) {
         [builder setFeatureFlag:@"resolution" withValue:@(360)];
-        builder.serverURL = [NSURL URLWithString:@"https://meet.jit.si"];
+        builder.serverURL = [NSURL URLWithString:@"https://sv.privus.io"];
         builder.welcomePageEnabled = YES;
+      [builder setFeatureFlag:@"call-integration.enabled" withBoolean:NO];
 
         // Apple rejected our app because they claim requiring a
         // Dropbox account for recording is not acceptable.
 #if DEBUG
-        [builder setFeatureFlag:@"ios.recording.enabled" withBoolean:YES];
+        [builder setFeatureFlag:@"ios.recording.enabled" withBoolean:NO];
 #endif
     }];
 

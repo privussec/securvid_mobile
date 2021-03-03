@@ -24,7 +24,7 @@ export default {
         replyIcon: 'rgb(94, 109, 121)'
     },
     'Conference': {
-        inviteButtonBackground: 'rgb(0, 119, 225)',
+        inviteButtonBackground: 'rgb(0, 110, 169)',
         onVideoText: 'white'
     },
     'Dialog': {
