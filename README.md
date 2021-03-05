@@ -4,12 +4,12 @@ SecurVid is a fork of the open-source (Apache) WebRTC Jitsi Meet application
 
 ## Installation
 
-On the client side, no installation is necessary. You just point your browser to the URL of your deployment, or you can use our [desktop apps](https://www.privus.global/downloads) if you prefer.
+On the client side, no installation is necessary. Just point your browser to the URL of the SecurVid meeting, or you can use our mobile apps for best performance.
+If you prefer to use our [desktop apps](https://www.privus.global/downloads) and/or you want to enable the 2nd layer of end to end encryption, you should use the desktop apps since not all browsers support the [technology](https://www.chromestatus.com/feature/6321945865879552) we use to enable the 2nd layer of end to end encryption.
 
 ## Download
 
-| Latest stable iOS and Android release | [![release](https://github.com/privussec/securvid_mobile/releases) |
-
+Latest stable iOS and Android [releases](https://github.com/privussec/securvid_mobile/releases)
 
 
 
@@ -35,4 +35,4 @@ For information on reporting security vulnerabilities in SecurVid, see [SECURITY
 
 ## Acknowledgements
 
-Jitsi Meet started out as a sample conferencing application using Jitsi Videobridge. It was originally developed by ESTOS' developer Philipp Hancke who then contributed it to the community where development continues with joint forces!
+Jitsi Meet started out as a sample conferencing application using Jitsi Videobridge. It was originally developed by ESTOS' developer Philipp Hancke who then contributed it to the open source community where development continues to this day.
