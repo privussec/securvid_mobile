@@ -21,7 +21,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'org.jitsi.meet'
+        applicationId 'io.privus.securvid'
         versionCode vcode
         versionName project.appVersion
 
