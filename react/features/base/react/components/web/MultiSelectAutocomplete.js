@@ -22,7 +22,7 @@ type Props = {
 
     /**
      * Optional footer to show as a last element in the results.
-     * Should be of type {content: <some content>}
+     * Should be of type {content: <some content>}.
      */
     footer: Object,
 
@@ -70,7 +70,12 @@ type Props = {
     /**
      * Indicates if we should focus.
      */
-    shouldFocus: boolean
+    shouldFocus: boolean,
+
+    /**
+     * Indicates whether the support link should be shown in case of an error.
+     */
+    showSupportLink: Boolean,
 };
 
 /**
@@ -263,7 +268,8 @@ class MultiSelectAutocomplete extends Component<Props, State> {
         const content = (
             <div className = 'autocomplete-error'>
                 <InlineDialogFailure
-                    onRetry = { this._onRetry } />
+                    onRetry = { this._onRetry }
+                    showSupportLink = { this.props.showSupportLink } />
             </div>
         );
 

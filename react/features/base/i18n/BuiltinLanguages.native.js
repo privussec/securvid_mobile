@@ -7,11 +7,6 @@ import i18next from 'i18next';
  */
 const _LANGUAGES = {
 
-    // German
-//   'de': {
-//        languages: require('../../../../lang/languages-de'),
-//        main: require('../../../../lang/main-de')
-//    },
 
     // Spanish
     'es': {
@@ -23,20 +18,13 @@ const _LANGUAGES = {
     'fr': {
         languages: require('../../../../lang/languages-fr'),
         main: require('../../../../lang/main-fr')
-    },
-
-    // Italian
-//    'it': {
-//        languages: require('../../../../lang/languages-it'),
-//        main: require('../../../../lang/main-it')
-//    },
-
-   // Portuguese
+  },
+    // Portuguese
     'pt': {
         languages: require('../../../../lang/languages-pt'),
         main: require('../../../../lang/main-pt')
     }
- };
+};
 
 // Register all builtin languages with the i18n library.
 for (const name in _LANGUAGES) { // eslint-disable-line guard-for-in

@@ -4,7 +4,7 @@ import { openDialog } from '../base/dialog';
 import { JitsiConferenceEvents } from '../base/lib-jitsi-meet';
 import { getParticipantDisplayName, getPinnedParticipant, pinParticipant } from '../base/participants';
 import { getLocalVideoTrack } from '../base/tracks';
-import { showNotification } from '../notifications';
+import { NOTIFICATION_TIMEOUT_TYPE, showNotification } from '../notifications';
 
 import {
     CAPTURE_EVENTS,
@@ -190,7 +190,7 @@ export function processPermissionRequestReply(participantId: string, event: Obje
                 descriptionArguments: { user: getParticipantDisplayName(state, participantId) },
                 descriptionKey,
                 titleKey: 'dialog.remoteControlTitle'
-            }));
+            }, NOTIFICATION_TIMEOUT_TYPE.MEDIUM));
 
             if (permissionGranted) {
                 // the remote control permissions has been granted
@@ -269,7 +269,7 @@ export function stopController(notifyRemoteParty: boolean = false) {
         dispatch(showNotification({
             descriptionKey: 'dialog.remoteControlStopMessage',
             titleKey: 'dialog.remoteControlTitle'
-        }));
+        }, NOTIFICATION_TIMEOUT_TYPE.LONG));
     };
 }
 
@@ -294,7 +294,7 @@ export function clearRequest() {
 
 
 /**
- * Sets that trasnport object that is used by the receiver to communicate with the native part of the remote control
+ * Sets that transport object that is used by the receiver to communicate with the native part of the remote control
  * implementation.
  *
  * @param {Transport} transport - The transport to be set.
@@ -425,7 +425,7 @@ export function stopReceiver(dontNotifyLocalParty: boolean = false, dontNotifyRe
             dispatch(showNotification({
                 descriptionKey: 'dialog.remoteControlStopMessage',
                 titleKey: 'dialog.remoteControlTitle'
-            }));
+            }, NOTIFICATION_TIMEOUT_TYPE.LONG));
         }
     };
 }
@@ -564,7 +564,7 @@ export function grant(participantId: string) {
                 dispatch(showNotification({
                     descriptionKey: 'dialog.startRemoteControlErrorMessage',
                     titleKey: 'dialog.remoteControlTitle'
-                }));
+                }, NOTIFICATION_TIMEOUT_TYPE.LONG));
 
                 dispatch(stopReceiver(true));
             });
@@ -689,7 +689,7 @@ export function resume() {
         area.mouseup(event => dispatch(mouseClicked(EVENTS.mouseup, event)));
         area.dblclick(event => dispatch(mouseClicked(EVENTS.mousedblclick, event)));
         area.contextmenu(() => false);
-        area[0].onmousewheel = event => {
+        area[0].onwheel = event => {
             event.preventDefault();
             event.stopPropagation();
             dispatch(mouseScrolled(event));
@@ -739,7 +739,7 @@ export function pause() {
             area.off('mousedown');
             area.off('mousemove');
             area.off('mouseup');
-            area[0].onmousewheel = undefined;
+            area[0].onwheel = undefined;
         }
 
         $(window).off('keydown');

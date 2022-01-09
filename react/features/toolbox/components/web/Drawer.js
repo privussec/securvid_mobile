@@ -1,15 +1,12 @@
 // @flow
 
-import React, { useEffect, useRef, useState } from 'react';
+import { makeStyles } from '@material-ui/core';
+import React, { useCallback } from 'react';
 
-import { Icon, IconArrowUpWide, IconArrowDownWide } from '../../../base/icons';
+import { DRAWER_MAX_HEIGHT } from '../../constants';
+
 
 type Props = {
-
-    /**
-     * Whether the drawer should have a button that expands its size or not.
-     */
-    canExpand: ?boolean,
 
     /**
      * The component(s) to be displayed within the drawer menu.
@@ -17,15 +14,24 @@ type Props = {
     children: React$Node,
 
     /**
-     Whether the drawer should be shown or not.
+     * Whether the drawer should be shown or not.
      */
     isOpen: boolean,
 
     /**
-     Function that hides the drawer.
+     * Function that hides the drawer.
      */
     onClose: Function
 };
+
+const useStyles = makeStyles(theme => {
+    return {
+        drawer: {
+            backgroundColor: theme.palette.ui02,
+            maxHeight: `calc(${DRAWER_MAX_HEIGHT})`
+        }
+    };
+});
 
 /**
  * Component that displays the mobile friendly drawer on web.
@@ -33,55 +39,43 @@ type Props = {
  * @returns {ReactElement}
  */
 function Drawer({
-    canExpand,
     children,
     isOpen,
-    onClose }: Props) {
-    const [ expanded, setExpanded ] = useState(false);
-    const drawerRef: Object = useRef(null);
+    onClose
+}: Props) {
+    const styles = useStyles();
 
     /**
-     * Closes the drawer when clicking outside of it.
+     * Handles clicks within the menu, preventing the propagation of the click event.
      *
-     * @param {Event} event - Mouse down event object.
+     * @param {Object} event - The click event.
      * @returns {void}
      */
-    function handleOutsideClick(event: MouseEvent) {
-        if (drawerRef.current && !drawerRef.current.contains(event.target)) {
-            onClose();
-        }
-    }
-
-    useEffect(() => {
-        window.addEventListener('mousedown', handleOutsideClick);
-
-        return () => {
-            window.removeEventListener('mousedown', handleOutsideClick);
-        };
-    }, [ drawerRef ]);
+    const handleInsideClick = useCallback(event => {
+        event.stopPropagation();
+    }, []);
 
     /**
-     * Toggles the menu state between expanded/collapsed.
+     * Handles clicks outside of the menu, closing it, and also stopping further propagation.
      *
+     * @param {Object} event - The click event.
      * @returns {void}
      */
-    function toggleExpanded() {
-        setExpanded(!expanded);
-    }
+    const handleOutsideClick = useCallback(event => {
+        event.stopPropagation();
+        onClose();
+    }, [ onClose ]);
 
     return (
         isOpen ? (
             <div
-                className = { `drawer-menu${expanded ? ' expanded' : ''}` }
-                ref = { drawerRef }>
-                {canExpand && (
-                    <div
-                        className = 'drawer-toggle'
-                        onClick = { toggleExpanded }>
-                        <Icon src = { expanded ? IconArrowDownWide : IconArrowUpWide } />
-                    </div>
-                )}
-                {children}
+                className = 'drawer-menu-container'
+                onClick = { handleOutsideClick }>
+                <div
+                    className = { `drawer-menu ${styles.drawer}` }
+                    onClick = { handleInsideClick }>
+                    {children}
+                </div>
             </div>
         ) : null
     );

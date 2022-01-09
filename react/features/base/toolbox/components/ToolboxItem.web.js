@@ -6,7 +6,15 @@ import { Icon } from '../../icons';
 import { Tooltip } from '../../tooltip';
 
 import AbstractToolboxItem from './AbstractToolboxItem';
-import type { Props } from './AbstractToolboxItem';
+import type { Props as AbstractToolboxItemProps } from './AbstractToolboxItem';
+
+type Props = AbstractToolboxItemProps & {
+
+    /**
+    * On key down handler.
+    */
+    onKeyDown: Function
+};
 
 /**
  * Web implementation of {@code AbstractToolboxItem}.
@@ -20,29 +28,21 @@ export default class ToolboxItem extends AbstractToolboxItem<Props> {
     constructor(props: Props) {
         super(props);
 
-        this._onKeyDown = this._onKeyDown.bind(this);
+        this._onKeyPress = this._onKeyPress.bind(this);
     }
 
-    _onKeyDown: (Object) => void;
+    _onKeyPress: (Object) => void;
 
     /**
-     * Handles 'Enter' key on the button to trigger onClick for accessibility.
-     * We should be handling Space onKeyUp but it conflicts with PTT.
+     * Handles 'Enter' and Space key on the button to trigger onClick for accessibility.
      *
      * @param {Object} event - The key event.
      * @private
      * @returns {void}
      */
-    _onKeyDown(event) {
-        // If the event coming to the dialog has been subject to preventDefault
-        // we don't handle it here.
-        if (event.defaultPrevented) {
-            return;
-        }
-
-        if (event.key === 'Enter') {
+    _onKeyPress(event) {
+        if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
-            event.stopPropagation();
             this.props.onClick();
         }
     }
@@ -61,6 +61,7 @@ export default class ToolboxItem extends AbstractToolboxItem<Props> {
             disabled,
             elementAfter,
             onClick,
+            onKeyDown,
             showLabel,
             tooltipPosition,
             toggled
@@ -72,9 +73,10 @@ export default class ToolboxItem extends AbstractToolboxItem<Props> {
             'aria-label': this.accessibilityLabel,
             className: className + (disabled ? ' disabled' : ''),
             onClick: disabled ? undefined : onClick,
-            onKeyDown: this._onKeyDown,
+            onKeyDown: disabled ? undefined : onKeyDown,
+            onKeyPress: this._onKeyPress,
             tabIndex: 0,
-            role: 'button'
+            role: showLabel ? 'menuitem' : 'button'
         };
 
         const elementType = showLabel ? 'li' : 'div';

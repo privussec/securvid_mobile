@@ -1,15 +1,20 @@
 // @flow
-
+import { withStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import React, { Component } from 'react';
 import type { Dispatch } from 'redux';
 
 import { createToolbarEvent, sendAnalytics } from '../../analytics';
 import { setAudioOnly } from '../../base/audio-only';
 import { translate } from '../../base/i18n';
+import { setLastN, getLastNForQualityLevel } from '../../base/lastn';
 import { connect } from '../../base/redux';
+import { withPixelLineHeight } from '../../base/styles/functions.web';
 import { setPreferredVideoQuality } from '../actions';
-import { VIDEO_QUALITY_LEVELS } from '../constants';
+import { DEFAULT_LAST_N, VIDEO_QUALITY_LEVELS } from '../constants';
 import logger from '../logger';
+
+import Slider from './Slider';
 
 const {
     ULTRA,
@@ -45,6 +50,11 @@ type Props = {
     _audioOnly: Boolean,
 
     /**
+     * The channelLastN value configured for the conference.
+     */
+    _channelLastN: Number,
+
+    /**
      * Whether or not the conference is in peer to peer mode.
      */
     _p2p: Boolean,
@@ -54,6 +64,11 @@ type Props = {
      * received from the remote participants.
      */
     _sendrecvVideoQuality: Number,
+
+  /**
+     * An object containing the CSS classes.
+     */
+    classes: Object,
 
     /**
      * Invoked to request toggling of audio only mode.
@@ -66,11 +81,43 @@ type Props = {
     t: Function
 };
 
+
+/**
+ * Creates the styles for the component.
+ *
+ * @param {Object} theme - The current UI theme.
+ *
+ * @returns {Object}
+ */
+const styles = theme => {
+    return {
+        dialog: {
+            color: theme.palette.text01
+        },
+        dialogDetails: {
+            ...withPixelLineHeight(theme.typography.bodyShortRegularLarge),
+            marginBottom: 16
+        },
+        dialogContents: {
+            background: theme.palette.ui01,
+            padding: '16px 16px 48px 16px'
+        },
+        sliderDescription: {
+            ...withPixelLineHeight(theme.typography.heading6),
+
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginBottom: 40
+        }
+    };
+};
+
+
 /**
  * Implements a React {@link Component} which displays a slider for selecting a
  * new receive video quality.
  *
- * @extends Component
+ * @augments Component
  */
 class VideoQualitySlider extends Component<Props> {
     _sliderOptions: Array<Object>;
@@ -133,73 +180,27 @@ class VideoQualitySlider extends Component<Props> {
      * @returns {ReactElement}
      */
     render() {
-        const { t } = this.props;
+        const { classes, t } = this.props;
         const activeSliderOption = this._mapCurrentQualityToSliderValue();
 
         return (
-            <div className = { 'video-quality-dialog' }>
-                <h3 className = 'video-quality-dialog-title'>
-                    { t('videoStatus.callQuality') }
-                </h3>
-                <div className = 'video-quality-dialog-contents'>
-                    <div className = 'video-quality-dialog-slider-container'>
-                        { /* FIXME: onChange and onMouseUp are both used for
-                           * compatibility with IE11. This workaround can be
-                           * removed after upgrading to React 16.
-                           */ }
-                        <input
-                            className = 'video-quality-dialog-slider'
-                            max = { this._sliderOptions.length - 1 }
-                            min = '0'
-                            onChange = { this._onSliderChange }
-                            onMouseUp = { this._onSliderChange }
-                            step = '1'
-                            type = 'range'
-                            value
-                                = { activeSliderOption } />
-
+            <div className = { clsx('video-quality-dialog', classes.dialog) }>
+                <div className = { classes.dialogDetails }>{t('videoStatus.adjustFor')}</div>
+                <div className = { classes.dialogContents }>
+                    <div className = { classes.sliderDescription }>
+                        <span>{t('videoStatus.bestPerformance')}</span>
+                        <span>{t('videoStatus.highestQuality')}</span>
                     </div>
-                    <div className = 'video-quality-dialog-labels'>
-                        { this._createLabels(activeSliderOption) }
-                    </div>
+                    <Slider
+                        ariaLabel = { t('videoStatus.callQuality') }
+                        max = { this._sliderOptions.length - 1 }
+                        min = { 0 }
+                        onChange = { this._onSliderChange }
+                        step = { 1 }
+                        value = { activeSliderOption } />
                 </div>
             </div>
         );
-    }
-
-    /**
-     * Creates React Elements to display mock tick marks with associated labels.
-     *
-     * @param {number} activeLabelIndex - Which of the sliderOptions should
-     * display as currently active.
-     * @private
-     * @returns {ReactElement[]}
-     */
-    _createLabels(activeLabelIndex) {
-        const labelsCount = this._sliderOptions.length;
-        const maxWidthOfLabel = `${100 / labelsCount}%`;
-
-        return this._sliderOptions.map((sliderOption, index) => {
-            const style = {
-                maxWidth: maxWidthOfLabel,
-                left: `${(index * 100) / (labelsCount - 1)}%`
-            };
-
-            const isActiveClass = activeLabelIndex === index ? 'active' : '';
-            const className
-                = `video-quality-dialog-label-container ${isActiveClass}`;
-
-            return (
-                <div
-                    className = { className }
-                    key = { index }
-                    style = { style }>
-                    <div className = 'video-quality-dialog-label'>
-                        { this.props.t(sliderOption.textKey) }
-                    </div>
-                </div>
-            );
-        });
     }
 
     _enableAudioOnly: () => void;
@@ -342,10 +343,18 @@ class VideoQualitySlider extends Component<Props> {
      */
     _setPreferredVideoQuality(qualityLevel) {
         this.props.dispatch(setPreferredVideoQuality(qualityLevel));
-
         if (this.props._audioOnly) {
             this.props.dispatch(setAudioOnly(false));
         }
+
+        // Determine the lastN value based on the quality setting.
+        let { _channelLastN = DEFAULT_LAST_N } = this.props;
+
+        _channelLastN = _channelLastN === -1 ? DEFAULT_LAST_N : _channelLastN;
+        const lastN = getLastNForQualityLevel(qualityLevel, _channelLastN);
+
+        // Set the lastN for the conference.
+        this.props.dispatch(setLastN(lastN));
     }
 }
 
@@ -361,12 +370,14 @@ function _mapStateToProps(state) {
     const { enabled: audioOnly } = state['features/base/audio-only'];
     const { p2p } = state['features/base/conference'];
     const { preferredVideoQuality } = state['features/video-quality'];
+    const { channelLastN } = state['features/base/config'];
 
     return {
         _audioOnly: audioOnly,
+        _channelLastN: channelLastN,
         _p2p: p2p,
         _sendrecvVideoQuality: preferredVideoQuality
     };
 }
 
-export default translate(connect(_mapStateToProps)(VideoQualitySlider));
+export default translate(connect(_mapStateToProps)(withStyles(styles)(VideoQualitySlider)));

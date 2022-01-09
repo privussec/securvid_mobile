@@ -1,6 +1,6 @@
 /* @flow */
 
-import Logger from 'jitsi-meet-logger';
+import Logger from '@jitsi/logger';
 
 import { APP_WILL_MOUNT } from '../app';
 import { CONFERENCE_JOINED, getCurrentConference } from '../conference';
@@ -251,7 +251,7 @@ function _setLogLevels(logger, config) {
     // First, set the default log level.
     logger.setLogLevel(config.defaultLogLevel);
 
-    // Second, set the log level of each logger explictly overriden by config.
+    // Second, set the log level of each logger explicitly overridden by config.
     Object.keys(config).forEach(
         id =>
             id === 'defaultLogLevel' || logger.setLogLevelById(config[id], id));

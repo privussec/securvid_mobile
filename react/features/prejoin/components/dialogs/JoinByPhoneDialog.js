@@ -27,7 +27,7 @@ type Props = {
     dialInNumber: string,
 
     /**
-     * The status of the call when the meeting calss the user.
+     * The status of the call when the meeting calls the user.
      */
     dialOutStatus: string,
 
@@ -42,7 +42,7 @@ type Props = {
     dialOutNumber: string,
 
     /**
-     * Fetches conference dial in numbers & conference id
+     * Fetches conference dial in numbers & conference id.
      */
     fetchConferenceDetails: Function,
 
@@ -70,7 +70,7 @@ type Props = {
 type State = {
 
     /**
-     * The dialout call is ongoing, 'CallingDialog' is shown;
+     * The dialout call is ongoing, 'CallingDialog' is shown;.
      */
     isCalling: boolean,
 

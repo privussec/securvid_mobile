@@ -29,7 +29,7 @@ type Props = {
 /**
  * Root application component for incoming call.
  *
- * @extends BaseApp
+ * @augments BaseApp
  */
 export default class IncomingCallApp extends BaseApp<Props> {
     _init: Promise<*>;
@@ -37,30 +37,28 @@ export default class IncomingCallApp extends BaseApp<Props> {
     /**
      * Navigates to {@link IncomingCallPage} upon mount.
      *
-     * NOTE: This was implmented here instead of in a middleware for the
+     * NOTE: This was implemented here instead of in a middleware for the
      * {@link APP_WILL_MOUNT} action because that would run also for
      * {@link App}.
      *
      * @returns {void}
      */
-    componentDidMount() {
-        super.componentDidMount();
+    async componentDidMount() {
+        await super.componentDidMount();
 
-        this._init.then(() => {
-            const { dispatch } = this.state.store;
-            const {
-                callerAvatarURL: avatarUrl,
-                callerName: name,
-                hasVideo
-            } = this.props;
+        const { dispatch } = this.state.store;
+        const {
+            callerAvatarURL: avatarUrl,
+            callerName: name,
+            hasVideo
+        } = this.props;
 
-            dispatch(incomingCallReceived({
-                avatarUrl,
-                hasVideo,
-                name
-            }));
+        dispatch(incomingCallReceived({
+            avatarUrl,
+            hasVideo,
+            name
+        }));
 
-            super._navigate({ component: IncomingCallPage });
-        });
+        super._navigate({ component: IncomingCallPage });
     }
 }

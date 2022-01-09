@@ -4,10 +4,10 @@ import { createToolbarEvent, sendAnalytics } from '../../analytics';
 import { openDialog } from '../../base/dialog';
 import { translate } from '../../base/i18n';
 import { IconMuteVideoEveryone } from '../../base/icons';
-import { getLocalParticipant, PARTICIPANT_ROLE } from '../../base/participants';
+import { getLocalParticipant, isLocalParticipantModerator } from '../../base/participants';
 import { connect } from '../../base/redux';
 import { AbstractButton, type AbstractButtonProps } from '../../base/toolbox/components';
-import { MuteEveryonesVideoDialog } from '../../remote-video-menu/components';
+import { MuteEveryonesVideoDialog } from '../../video-menu/components';
 
 type Props = AbstractButtonProps & {
 
@@ -15,11 +15,6 @@ type Props = AbstractButtonProps & {
      * The Redux dispatch function.
      */
     dispatch: Function,
-
-    /*
-     ** Whether the local participant is a moderator or not.
-     */
-    isModerator: Boolean,
 
     /**
      * The ID of the local participant.
@@ -29,13 +24,13 @@ type Props = AbstractButtonProps & {
 
 /**
  * Implements a React {@link Component} which displays a button for disabling the camera of
- * every participant (except the local one)
+ * every participant (except the local one).
  */
 class MuteEveryonesVideoButton extends AbstractButton<Props, *> {
-    accessibilityLabel = 'toolbar.accessibilityLabel.muteEveryonesVideo';
+    accessibilityLabel = 'toolbar.accessibilityLabel.muteEveryonesVideoStream';
     icon = IconMuteVideoEveryone;
     label = 'toolbar.muteEveryonesVideo';
-    tooltip = 'toolbar.muteVideoEveryone';
+    tooltip = 'toolbar.muteEveryonesVideo';
 
     /**
      * Handles clicking / pressing the button, and opens a confirmation dialog.
@@ -62,14 +57,12 @@ class MuteEveryonesVideoButton extends AbstractButton<Props, *> {
  */
 function _mapStateToProps(state: Object, ownProps: Props) {
     const localParticipant = getLocalParticipant(state);
-    const isModerator = localParticipant.role === PARTICIPANT_ROLE.MODERATOR;
-    const { visible } = ownProps;
     const { disableRemoteMute } = state['features/base/config'];
+    const { visible = isLocalParticipantModerator(state) && !disableRemoteMute } = ownProps;
 
     return {
-        isModerator,
         localParticipantId: localParticipant.id,
-        visible: visible && isModerator && !disableRemoteMute
+        visible
     };
 }
 

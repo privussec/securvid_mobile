@@ -16,9 +16,19 @@ import { getSessionStatusToShow } from '../functions';
 type Props = {
 
     /**
+     * Whether this is the Jibri recorder participant.
+     */
+    _iAmRecorder: boolean,
+
+    /**
      * The status of the highermost priority session.
      */
     _status: ?string,
+
+    /**
+     * An object containing the CSS classes.
+     */
+    classes: ?{[ key: string]: string},
 
     /**
      * The recording mode this indicator should display.
@@ -95,11 +105,11 @@ export default class AbstractRecordingLabel
      * @inheritdoc
      */
     render() {
-        return this.props._status && !this.state.staleLabel
+        return this.props._status && !this.state.staleLabel && !this.props._iAmRecorder
             ? this._renderLabel() : null;
     }
 
-    _getLabelKey: () => ?string
+    _getLabelKey: () => ?string;
 
     /**
      * Returns the label key that this indicator should render.
@@ -125,7 +135,7 @@ export default class AbstractRecordingLabel
      * @protected
      * @returns {React$Element}
      */
-    _renderLabel: () => React$Element<*>
+    _renderLabel: () => React$Element<*>;
 
     /**
      * Updates the stale status of the label on a prop change. A label is stale
@@ -167,6 +177,7 @@ export function _mapStateToProps(state: Object, ownProps: Props) {
     const { mode } = ownProps;
 
     return {
+        _iAmRecorder: state['features/base/config'].iAmRecorder,
         _status: getSessionStatusToShow(state, mode)
     };
 }

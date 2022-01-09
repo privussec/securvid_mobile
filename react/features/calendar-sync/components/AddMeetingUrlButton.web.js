@@ -42,7 +42,7 @@ type Props = {
 /**
  * A React Component for adding a meeting URL to an existing calendar event.
  *
- * @extends Component
+ * @augments Component
  */
 class AddMeetingUrlButton extends Component<Props> {
     /**
@@ -55,6 +55,7 @@ class AddMeetingUrlButton extends Component<Props> {
 
         // Bind event handler so it is only bound once for every instance.
         this._onClick = this._onClick.bind(this);
+        this._onKeyPress = this._onKeyPress.bind(this);
     }
 
     /**
@@ -67,7 +68,9 @@ class AddMeetingUrlButton extends Component<Props> {
             <Tooltip content = { this.props.t('calendarSync.addMeetingURL') }>
                 <div
                     className = 'button add-button'
-                    onClick = { this._onClick }>
+                    onClick = { this._onClick }
+                    onKeyPress = { this._onKeyPress }
+                    role = 'button'>
                     <Icon src = { IconAdd } />
                 </div>
             </Tooltip>
@@ -84,9 +87,25 @@ class AddMeetingUrlButton extends Component<Props> {
     _onClick() {
         const { calendarId, dispatch, eventId } = this.props;
 
-        sendAnalytics(createCalendarClickedEvent('calendar.add.url'));
+        sendAnalytics(createCalendarClickedEvent('add.url'));
 
         dispatch(updateCalendarEvent(eventId, calendarId));
+    }
+
+    _onKeyPress: (Object) => void;
+
+    /**
+     * KeyPress handler for accessibility.
+     *
+     * @param {Object} e - The key event to handle.
+     *
+     * @returns {void}
+     */
+    _onKeyPress(e) {
+        if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            this._onClick();
+        }
     }
 }
 

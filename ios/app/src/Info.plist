@@ -30,10 +30,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>io.privus.bubble</string>
+			<string>io.privus.securvid</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>io.privus.bubble</string>
+				<string>io.privus.securvid</string>
 			</array>
 		</dict>
 		<dict>
@@ -48,7 +48,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>1</string>
 	<key>FirebaseCrashlyticsCollectionEnabled</key>
 	<string>false</string>
 	<key>FirebaseScreenReportingEnabled</key>
@@ -69,17 +69,21 @@
 		</dict>
 	</dict>
 	<key>NSCalendarsUsageDescription</key>
-	<string>See your scheduled SecurVid meetings in the app.</string>
+	<string>See your scheduled meetings in the app.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Participate in SecurVid meetings with video.</string>
+	<string>Participate in meetings with video.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Local network is used for establishing Peer-to-Peer connections.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Participate in SecurVid meetings with voice.</string>
+	<string>Participate in meetings with voice.</string>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>org.jitsi.JitsiMeet.ios.conference</string>
 	</array>
+	<key>RTCAppGroupIdentifier</key>
+	<string>group.io.privus.securvid.appgroup</string>
+	<key>RTCScreenSharingExtension</key>
+	<string>io.privus.securvid.broadcast.extension</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

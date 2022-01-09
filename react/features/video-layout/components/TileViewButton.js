@@ -1,5 +1,5 @@
 // @flow
-
+import { batch } from 'react-redux';
 import type { Dispatch } from 'redux';
 
 import {
@@ -9,9 +9,9 @@ import {
 import { TILE_VIEW_ENABLED, getFeatureFlag } from '../../base/flags';
 import { translate } from '../../base/i18n';
 import { IconTileView } from '../../base/icons';
-import { getParticipantCount } from '../../base/participants';
 import { connect } from '../../base/redux';
 import { AbstractButton, type AbstractButtonProps } from '../../base/toolbox/components';
+import { setOverflowMenuVisible } from '../../toolbox/actions';
 import { setTileView } from '../actions';
 import { shouldDisplayTileView } from '../functions';
 import logger from '../logger';
@@ -35,7 +35,7 @@ type Props = AbstractButtonProps & {
 /**
  * Component that renders a toolbar button for toggling the tile layout view.
  *
- * @extends AbstractButton
+ * @augments AbstractButton
  */
 class TileViewButton<P: Props> extends AbstractButton<P, *> {
     accessibilityLabel = 'toolbar.accessibilityLabel.tileView';
@@ -54,15 +54,20 @@ class TileViewButton<P: Props> extends AbstractButton<P, *> {
     _handleClick() {
         const { _tileViewEnabled, dispatch } = this.props;
 
+        const value = !_tileViewEnabled;
+
         sendAnalytics(createToolbarEvent(
             'tileview.button',
             {
-                'is_enabled': _tileViewEnabled
+                'is_enabled': value
             }));
-        const value = !_tileViewEnabled;
 
         logger.debug(`Tile view ${value ? 'enable' : 'disable'}`);
-        dispatch(setTileView(value));
+        batch(() => {
+            dispatch(setTileView(value));
+            navigator.product !== 'ReactNative' && dispatch(setOverflowMenuVisible(false));
+        });
+
     }
 
     /**
@@ -87,8 +92,7 @@ class TileViewButton<P: Props> extends AbstractButton<P, *> {
  */
 function _mapStateToProps(state, ownProps) {
     const enabled = getFeatureFlag(state, TILE_VIEW_ENABLED, true);
-    const lonelyMeeting = getParticipantCount(state) < 2;
-    const { visible = enabled && !lonelyMeeting } = ownProps;
+    const { visible = enabled } = ownProps;
 
     return {
         _tileViewEnabled: shouldDisplayTileView(state),

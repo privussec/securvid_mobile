@@ -5,7 +5,7 @@ import { NativeModules } from 'react-native';
 let GoogleSignin;
 
 if (NativeModules.RNGoogleSignin) {
-    GoogleSignin = require('@react-native-community/google-signin').GoogleSignin;
+    GoogleSignin = require('@react-native-google-signin/google-signin').GoogleSignin;
 }
 
 import {
@@ -19,7 +19,7 @@ import {
  * the export object is similar so no need for different export logic.
  *
  * For more detailed documentation of the {@code GoogleSignin} API, please visit
- * https://github.com/react-native-community/react-native-google-signin.
+ * https://github.com/@react-native-google-signin/google-signin.
  */
 class GoogleApi {
     /**
@@ -59,7 +59,7 @@ class GoogleApi {
                 API_URL_LIVE_BROADCASTS)
             .then(broadcasts => {
                 // Then fetching all the available live streams that the
-                // user has access to with the broadcasts we retreived
+                // user has access to with the broadcasts we retrieved
                 // earlier.
                 this._getLiveStreamsForBroadcasts(
                     accessToken, broadcasts).then(resolve, reject);
@@ -142,7 +142,7 @@ class GoogleApi {
      * @private
      * @param {string} accessToken - The Google access token.
      * @param {Array<Object>} broadcasts - The list of broadcasts that we want
-     * to retreive streams for.
+     * to retrieve streams for.
      * @returns {Promise}
      */
     _getLiveStreamsForBroadcasts(accessToken, broadcasts): Promise<*> {

@@ -130,9 +130,9 @@ static void initializeViewsMap() {
     [externalAPI sendEndpointTextMessage:message :to];
 }
 
-- (void)toggleScreenShare {
+- (void)toggleScreenShare:(BOOL)enabled {
     ExternalAPI *externalAPI = [[JitsiMeet sharedInstance] getExternalAPI];
-    [externalAPI toggleScreenShare];
+    [externalAPI toggleScreenShare:enabled];
 }
 
 - (void)retrieveParticipantsInfo:(void (^ _Nonnull)(NSArray * _Nullable))completionHandler {
@@ -153,6 +153,11 @@ static void initializeViewsMap() {
 - (void)sendChatMessage:(NSString * _Nonnull)message :(NSString * _Nullable)to {
     ExternalAPI *externalAPI = [[JitsiMeet sharedInstance] getExternalAPI];
     [externalAPI sendChatMessage:message :to];
+}
+
+- (void)setVideoMuted:(BOOL)muted {
+    ExternalAPI *externalAPI = [[JitsiMeet sharedInstance] getExternalAPI];
+    [externalAPI sendSetVideoMuted:muted];
 }
 
 #pragma mark Private methods
@@ -184,7 +189,7 @@ static void initializeViewsMap() {
     // conference. However, React and, respectively,
     // appProperties/initialProperties are declarative expressions i.e. one and
     // the same URL will not trigger an automatic re-render in the JavaScript
-    // source code. The workaround implemented bellow introduces imperativeness
+    // source code. The workaround implemented below introduces imperativeness
     // in React Component props by defining a unique value per invocation.
     props[@"timestamp"] = @(mach_absolute_time());
 

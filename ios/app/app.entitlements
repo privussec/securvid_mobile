@@ -4,11 +4,13 @@
 <dict>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:bubble.privus.io</string>
-		<string>applinks:bubble.privus.pt</string>
 		<string>applinks:sv.privus.io</string>
 	</array>
 	<key>com.apple.developer.siri</key>
 	<true/>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.io.privus.securvid.appgroup</string>
+	</array>
 </dict>
 </plist>

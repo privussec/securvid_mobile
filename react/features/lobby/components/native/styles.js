@@ -1,27 +1,40 @@
 // @flow
 
-import { ColorPalette } from '../../../base/styles';
+import BaseTheme from '../../../base/ui/components/BaseTheme';
 
-const SECONDARY_COLOR = '#B8C7E0';
+const SECONDARY_COLOR = BaseTheme.palette.border04;
+
+export const ENABLED_THUMB_COLOR = BaseTheme.palette.action04;
+export const ENABLED_TRACK_COLOR = BaseTheme.palette.screen01Header;
+export const DISABLED_THUMB_COLOR = BaseTheme.palette.icon04;
 
 export default {
     button: {
         alignItems: 'center',
         borderRadius: 4,
-        marginVertical: 8,
-        paddingVertical: 10
+        marginVertical: 4,
+        paddingVertical: 8
     },
 
     contentWrapper: {
         alignItems: 'center',
+        display: 'flex',
         flexDirection: 'column',
-        padding: 32
+        justifyItems: 'center',
+        height: '100%'
+    },
+
+    closeIcon: {
+        color: 'red',
+        fontSize: 20
     },
 
     dialogTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 10
+        margin: 'auto',
+        marginVertical: 24,
+        textAlign: 'center'
     },
 
     displayNameText: {
@@ -48,7 +61,7 @@ export default {
     },
 
     fieldError: {
-        color: ColorPalette.warning,
+        color: BaseTheme.palette.warning07,
         fontSize: 10
     },
 
@@ -67,6 +80,8 @@ export default {
     },
 
     joiningMessage: {
+        color: 'rgba(0, 0, 0, .7)',
+        paddingBottom: 36,
         textAlign: 'center'
     },
 
@@ -99,7 +114,15 @@ export default {
     },
 
     secondaryText: {
-        color: 'rgba(0, 0, 0, .7)'
+        color: 'rgba(0, 0, 0, .7)',
+        margin: 'auto',
+        textAlign: 'center'
+    },
+
+    cancelButton: {
+        alignItems: 'center',
+        backgroundColor: 'transparent',
+        marginVertical: 4
     },
 
     // KnockingParticipantList
@@ -138,5 +161,14 @@ export default {
 
     knockingParticipantListText: {
         color: 'white'
+    },
+
+    lobbySwitchContainer: {
+        flexDirection: 'column',
+        marginTop: BaseTheme.spacing[2]
+    },
+
+    lobbySwitchIcon: {
+        alignSelf: 'flex-end'
     }
 };

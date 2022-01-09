@@ -39,10 +39,11 @@
 - (void)hangUp;
 - (void)setAudioMuted:(BOOL)muted;
 - (void)sendEndpointTextMessage:(NSString * _Nonnull)message :(NSString * _Nullable)to;
-- (void)toggleScreenShare;
+- (void)toggleScreenShare:(BOOL)enabled;
 - (void)retrieveParticipantsInfo:(void (^ _Nonnull)(NSArray * _Nullable))completionHandler;
 - (void)openChat:(NSString * _Nullable)to;
 - (void)closeChat;
 - (void)sendChatMessage:(NSString * _Nonnull)message :(NSString * _Nullable)to;
+- (void)setVideoMuted:(BOOL)muted;
 
 @end

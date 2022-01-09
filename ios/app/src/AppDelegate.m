@@ -30,14 +30,14 @@
     JitsiMeet *jitsiMeet = [JitsiMeet sharedInstance];
 
     jitsiMeet.conferenceActivityType = JitsiMeetConferenceActivityType;
-    jitsiMeet.customUrlScheme = @"io.privus.bubble";
-    jitsiMeet.universalLinkDomains = @[@"sv.privus.io", @"bubble.privus.pt"];
+    jitsiMeet.customUrlScheme = @"io.privus.securvid";
+    jitsiMeet.universalLinkDomains = @[@"sv.privus.io"];
 
     jitsiMeet.defaultConferenceOptions = [JitsiMeetConferenceOptions fromBuilder:^(JitsiMeetConferenceOptionsBuilder *builder) {
+        [builder setFeatureFlag:@"welcomepage.enabled" withBoolean:YES];
         [builder setFeatureFlag:@"resolution" withValue:@(360)];
+        [builder setFeatureFlag:@"ios.screensharing.enabled" withBoolean:YES];
         builder.serverURL = [NSURL URLWithString:@"https://sv.privus.io"];
-        builder.welcomePageEnabled = YES;
-      [builder setFeatureFlag:@"call-integration.enabled" withBoolean:NO];
 
         // Apple rejected our app because they claim requiring a
         // Dropbox account for recording is not acceptable.
@@ -52,7 +52,7 @@
   if ([FIRUtilities appContainsRealServiceInfoPlist]) {
         NSLog(@"Enabling Firebase");
         [FIRApp configure];
-        // Crashlytics defaults to disabled wirth the FirebaseCrashlyticsCollectionEnabled Info.plist key.
+        // Crashlytics defaults to disabled with the FirebaseCrashlyticsCollectionEnabled Info.plist key.
         [[FIRCrashlytics crashlytics] setCrashlyticsCollectionEnabled:![jitsiMeet isCrashReportingDisabled]];
     }
 

@@ -3,15 +3,28 @@
 import React, { Component } from 'react';
 
 import { isMobileBrowser } from '../../../base/environment/utils';
-import { IconArrowDown } from '../../../base/icons';
+import { translate } from '../../../base/i18n';
+import { IconArrowUp } from '../../../base/icons';
 import { connect } from '../../../base/redux';
 import { ToolboxButtonWithIcon } from '../../../base/toolbox/components';
 import { getLocalJitsiVideoTrack } from '../../../base/tracks';
 import { toggleVideoSettings, VideoSettingsPopup } from '../../../settings';
+import { getVideoSettingsVisibility } from '../../../settings/functions';
 import { isVideoSettingsButtonDisabled } from '../../functions';
 import VideoMuteButton from '../VideoMuteButton';
 
+
 type Props = {
+
+    /**
+     * The button's key.
+     */
+     buttonKey?: string,
+
+    /**
+     * External handler for click action.
+     */
+    handleClick: Function,
 
     /**
      * Click handler for the small icon. Opens video options.
@@ -29,9 +42,15 @@ type Props = {
     hasVideoTrack: boolean,
 
     /**
-     * If the button should be disabled
+     * If the button should be disabled.
      */
     isDisabled: boolean,
+
+    /**
+     * Notify mode for `toolbarButtonClicked` event -
+     * whether to only notify or to also prevent button click routine.
+     */
+    notifyMode?: string,
 
     /**
      * Flag controlling the visibility of the button.
@@ -39,7 +58,17 @@ type Props = {
      * as mobile devices do not support capture of more than one
      * camera at a time.
      */
-    visible: boolean
+    visible: boolean,
+
+    /**
+     * Used for translation.
+     */
+    t: Function,
+
+    /**
+     * Defines is popup is open.
+     */
+    isOpen: boolean
 };
 
 /**
@@ -48,6 +77,17 @@ type Props = {
  * @returns {ReactElement}
  */
 class VideoSettingsButton extends Component<Props> {
+    /**
+     * Initializes a new {@code VideoSettingsButton} instance.
+     *
+     * @inheritdoc
+     */
+    constructor(props: Props) {
+        super(props);
+
+        this._onEscClick = this._onEscClick.bind(this);
+        this._onClick = this._onClick.bind(this);
+    }
 
     /**
      * Returns true if the settings icon is disabled.
@@ -59,6 +99,34 @@ class VideoSettingsButton extends Component<Props> {
 
         return (!hasPermissions || isDisabled) && !hasVideoTrack;
     }
+    _onEscClick: (KeyboardEvent) => void;
+
+    /**
+     * Click handler for the more actions entries.
+     *
+     * @param {KeyboardEvent} event - Esc key click to close the popup.
+     * @returns {void}
+     */
+    _onEscClick(event) {
+        if (event.key === 'Escape' && this.props.isOpen) {
+            event.preventDefault();
+            event.stopPropagation();
+            this._onClick();
+        }
+    }
+
+    _onClick: () => void;
+
+    /**
+     * Click handler for the more actions entries.
+     *
+     * @returns {void}
+     */
+    _onClick() {
+        const { onVideoOptionsClick } = this.props;
+
+        onVideoOptionsClick();
+    }
 
     /**
      * Implements React's {@link Component#render}.
@@ -66,18 +134,31 @@ class VideoSettingsButton extends Component<Props> {
      * @inheritdoc
      */
     render() {
-        const { onVideoOptionsClick, visible } = this.props;
+        const { t, visible, isOpen, buttonKey, notifyMode } = this.props;
 
         return visible ? (
             <VideoSettingsPopup>
                 <ToolboxButtonWithIcon
-                    icon = { IconArrowDown }
+                    ariaControls = 'video-settings-dialog'
+                    ariaExpanded = { isOpen }
+                    ariaHasPopup = { true }
+                    ariaLabel = { this.props.t('toolbar.videoSettings') }
+                    buttonKey = { buttonKey }
+                    icon = { IconArrowUp }
                     iconDisabled = { this._isIconDisabled() }
-                    onIconClick = { onVideoOptionsClick }>
-                    <VideoMuteButton />
+                    iconId = 'video-settings-button'
+                    iconTooltip = { t('toolbar.videoSettings') }
+                    notifyMode = { notifyMode }
+                    onIconClick = { this._onClick }
+                    onIconKeyDown = { this._onEscClick }>
+                    <VideoMuteButton
+                        buttonKey = { buttonKey }
+                        notifyMode = { notifyMode } />
                 </ToolboxButtonWithIcon>
             </VideoSettingsPopup>
-        ) : <VideoMuteButton />;
+        ) : <VideoMuteButton
+            buttonKey = { buttonKey }
+            notifyMode = { notifyMode } />;
     }
 }
 
@@ -94,6 +175,7 @@ function mapStateToProps(state) {
         hasPermissions: permissions.video,
         hasVideoTrack: Boolean(getLocalJitsiVideoTrack(state)),
         isDisabled: isVideoSettingsButtonDisabled(state),
+        isOpen: getVideoSettingsVisibility(state),
         visible: !isMobileBrowser()
     };
 }
@@ -102,7 +184,7 @@ const mapDispatchToProps = {
     onVideoOptionsClick: toggleVideoSettings
 };
 
-export default connect(
+export default translate(connect(
     mapStateToProps,
-    mapDispatchToProps,
-)(VideoSettingsButton);
+    mapDispatchToProps
+)(VideoSettingsButton));

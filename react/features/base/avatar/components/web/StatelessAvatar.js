@@ -13,7 +13,7 @@ type Props = AbstractProps & {
     className?: string,
 
     /**
-     * The default avatar URL if we want to override the app bundled one (e.g. AlwaysOnTop)
+     * The default avatar URL if we want to override the app bundled one (e.g. AlwaysOnTop).
      */
     defaultAvatar?: string,
 
@@ -30,7 +30,12 @@ type Props = AbstractProps & {
     /**
      * TestId of the element, if any.
      */
-    testId?: string
+    testId?: string,
+
+    /**
+     * Indicates whether to load the avatar using CORS or not.
+     */
+    useCORS?: ?boolean
 };
 
 /**
@@ -38,13 +43,25 @@ type Props = AbstractProps & {
  * props.
  */
 export default class StatelessAvatar extends AbstractStatelessAvatar<Props> {
+
+    /**
+     * Instantiates a new {@code Component}.
+     *
+     * @inheritdoc
+     */
+    constructor(props: Props) {
+        super(props);
+
+        this._onAvatarLoadError = this._onAvatarLoadError.bind(this);
+    }
+
     /**
      * Implements {@code Component#render}.
      *
      * @inheritdoc
      */
     render() {
-        const { initials, url } = this.props;
+        const { initials, url, useCORS } = this.props;
 
         if (this._isIcon(url)) {
             return (
@@ -64,10 +81,12 @@ export default class StatelessAvatar extends AbstractStatelessAvatar<Props> {
             return (
                 <div className = { this._getBadgeClassName() }>
                     <img
+                        alt = 'avatar'
                         className = { this._getAvatarClassName() }
+                        crossOrigin = { useCORS ? '' : undefined }
                         data-testid = { this.props.testId }
                         id = { this.props.id }
-                        onError = { this.props.onAvatarLoadError }
+                        onError = { this._onAvatarLoadError }
                         src = { url }
                         style = { this._getAvatarStyle() } />
                 </div>
@@ -88,7 +107,7 @@ export default class StatelessAvatar extends AbstractStatelessAvatar<Props> {
                         xmlnsXlink = 'http://www.w3.org/1999/xlink'>
                         <text
                             dominantBaseline = 'central'
-                            fill = 'rgba(255,255,255,.6)'
+                            fill = 'rgba(255,255,255,1)'
                             fontSize = '40pt'
                             textAnchor = 'middle'
                             x = '50'
@@ -104,6 +123,7 @@ export default class StatelessAvatar extends AbstractStatelessAvatar<Props> {
         return (
             <div className = { this._getBadgeClassName() }>
                 <img
+                    alt = 'avatar'
                     className = { this._getAvatarClassName('defaultAvatar') }
                     data-testid = { this.props.testId }
                     id = { this.props.id }
@@ -123,7 +143,7 @@ export default class StatelessAvatar extends AbstractStatelessAvatar<Props> {
         const { size } = this.props;
 
         return {
-            backgroundColor: color || undefined,
+            background: color || undefined,
             fontSize: size ? size * 0.5 : '180%',
             height: size || '100%',
             width: size || '100%'
@@ -155,5 +175,20 @@ export default class StatelessAvatar extends AbstractStatelessAvatar<Props> {
         return '';
     }
 
-    _isIcon: (?string | ?Object) => boolean
+    _isIcon: (?string | ?Object) => boolean;
+
+    _onAvatarLoadError: () => void;
+
+    /**
+     * Handles avatar load errors.
+     *
+     * @returns {void}
+     */
+    _onAvatarLoadError() {
+        const { onAvatarLoadError, onAvatarLoadErrorParams } = this.props;
+
+        if (typeof onAvatarLoadError === 'function') {
+            onAvatarLoadError(onAvatarLoadErrorParams);
+        }
+    }
 }

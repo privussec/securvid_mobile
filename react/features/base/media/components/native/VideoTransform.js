@@ -30,7 +30,7 @@ const MIN_SCALE = 1;
  * view to. This is large enough now to let the user drag the view to a position
  * where no other displayed components cover it (such as filmstrip). If a
  * ViewPort (hint) support is added to the LargeVideo component then this
- * contant will not be necessary anymore.
+ * constant will not be necessary anymore.
  */
 const MAX_OFFSET = 100;
 
@@ -88,7 +88,7 @@ type Props = {
     style: Object,
 
     /**
-     * The stored transforms retreived from Redux to be initially applied
+     * The stored transforms retrieved from Redux to be initially applied
      * to different streams.
      */
     _transforms: Object,
@@ -272,7 +272,7 @@ class VideoTransform extends Component<Props, State> {
         };
     }
 
-    _didMove: Object => boolean
+    _didMove: Object => boolean;
 
     /**
      * Determines if there was large enough movement to be handled.
@@ -315,7 +315,7 @@ class VideoTransform extends Component<Props, State> {
         return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
     }
 
-    _getTouchPosition: Object => Object
+    _getTouchPosition: Object => Object;
 
     /**
      * Calculates the position of the touch event.
@@ -331,7 +331,7 @@ class VideoTransform extends Component<Props, State> {
         };
     }
 
-    _getTransformStyle: () => Object
+    _getTransformStyle: () => Object;
 
     /**
      * Generates a transform style object to be used on the component.
@@ -460,7 +460,7 @@ class VideoTransform extends Component<Props, State> {
         }
     }
 
-    _onGesture: (string, ?Object | number) => void
+    _onGesture: (string, ?Object | number) => void;
 
     /**
      * Handles gestures and converts them to transforms.
@@ -515,7 +515,7 @@ class VideoTransform extends Component<Props, State> {
         this.lastTap = 0;
     }
 
-    _onLayout: Object => void
+    _onLayout: Object => void;
 
     /**
      * Callback for the onLayout of the component.
@@ -535,7 +535,7 @@ class VideoTransform extends Component<Props, State> {
         });
     }
 
-    _onMoveShouldSetPanResponder: (Object, Object) => boolean
+    _onMoveShouldSetPanResponder: (Object, Object) => boolean;
 
     /**
      * Function to decide whether the responder should respond to a move event.
@@ -551,7 +551,7 @@ class VideoTransform extends Component<Props, State> {
                 || gestureState.numberActiveTouches === 2);
     }
 
-    _onPanResponderGrant: (Object, Object) => void
+    _onPanResponderGrant: (Object, Object) => void;
 
     /**
      * Calculates the initial touch distance.
@@ -571,7 +571,7 @@ class VideoTransform extends Component<Props, State> {
         }
     }
 
-    _onPanResponderMove: (Object, Object) => void
+    _onPanResponderMove: (Object, Object) => void;
 
     /**
      * Handles the PanResponder move (touch move) event.
@@ -615,7 +615,7 @@ class VideoTransform extends Component<Props, State> {
         }
     }
 
-    _onPanResponderRelease: () => void
+    _onPanResponderRelease: () => void;
 
     /**
      * Handles the PanResponder gesture end event.
@@ -631,7 +631,7 @@ class VideoTransform extends Component<Props, State> {
         delete this.initialPosition;
     }
 
-    _onStartShouldSetPanResponder: () => boolean
+    _onStartShouldSetPanResponder: () => boolean;
 
     /**
      * Function to decide whether the responder should respond to a start

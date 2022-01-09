@@ -52,7 +52,7 @@ MiddlewareRegistry.register(store => next => action => {
  */
 function _overwriteLocalParticipant(
         { dispatch, getState },
-        { avatarURL, email, name, features }) {
+        { avatarURL, email, id: jwtId, name, features }) {
     let localParticipant;
 
     if ((avatarURL || email || name)
@@ -67,6 +67,9 @@ function _overwriteLocalParticipant(
         }
         if (email) {
             newProperties.email = email;
+        }
+        if (jwtId) {
+            newProperties.jwtId = jwtId;
         }
         if (name) {
             newProperties.name = name;
@@ -134,7 +137,7 @@ function _setJWT(store, next, action) {
             }
 
             if (jwtPayload) {
-                const { context, iss } = jwtPayload;
+                const { context, iss, sub } = jwtPayload;
 
                 action.jwt = jwt;
                 action.issuer = iss;
@@ -144,7 +147,7 @@ function _setJWT(store, next, action) {
                     action.callee = context.callee;
                     action.group = context.group;
                     action.server = context.server;
-                    action.tenant = context.tenant;
+                    action.tenant = context.tenant || sub || undefined;
                     action.user = user;
 
                     user && _overwriteLocalParticipant(

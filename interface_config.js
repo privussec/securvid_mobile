@@ -1,6 +1,13 @@
 /* eslint-disable no-unused-vars, no-var, max-len */
 /* eslint sort-keys: ["error", "asc", {"caseSensitive": false}] */
 
+/**
+ * !!!IMPORTANT!!!
+ *
+ * This file is considered deprecated. All options will eventually be moved to
+ * config.js, and no new options should be added here.
+ */
+
 var interfaceConfig = {
     APP_NAME: 'SecurVid',
     AUDIO_LEVEL_PRIMARY_COLOR: 'rgba(255,255,255,0.4)',
@@ -15,44 +22,15 @@ var interfaceConfig = {
      * Note: this mode is experimental and subject to breakage.
      */
     AUTO_PIN_LATEST_SCREEN_SHARE: 'remote-only',
-    BRAND_WATERMARK_LINK: 'https://privus.global/securvid/security',
+    BRAND_WATERMARK_LINK: 'https://www.privus.global/securvid-security',
 
     CLOSE_PAGE_GUEST_HINT: false, // A html text to be shown to guests on the close page, false disables it
-    /**
-     * Whether the connection indicator icon should hide itself based on
-     * connection strength. If true, the connection indicator will remain
-     * displayed while the participant has a weak connection and will hide
-     * itself after the CONNECTION_INDICATOR_HIDE_TIMEOUT when the connection is
-     * strong.
-     *
-     * @type {boolean}
-     */
-    CONNECTION_INDICATOR_AUTO_HIDE_ENABLED: true,
 
-    /**
-     * How long the connection indicator should remain displayed before hiding.
-     * Used in conjunction with CONNECTION_INDICATOR_AUTOHIDE_ENABLED.
-     *
-     * @type {number}
-     */
-    CONNECTION_INDICATOR_AUTO_HIDE_TIMEOUT: 5000,
-
-    /**
-     * If true, hides the connection indicators completely.
-     *
-     * @type {boolean}
-     */
-    CONNECTION_INDICATOR_DISABLED: false,
-
-    DEFAULT_BACKGROUND: '#264857',
-    DEFAULT_LOCAL_DISPLAY_NAME: 'me',
+    DEFAULT_BACKGROUND: '#142b36',
     DEFAULT_LOGO_URL: 'images/watermark.svg',
-    DEFAULT_REMOTE_DISPLAY_NAME: 'Fellow Participant',
     DEFAULT_WELCOME_PAGE_LOGO_URL: 'images/watermark.svg',
 
-    DISABLE_DOMINANT_SPEAKER_INDICATOR: true,
-
-    DISABLE_FOCUS_INDICATOR: false,
+    DISABLE_DOMINANT_SPEAKER_INDICATOR: false,
 
     /**
      * If true, notifications regarding joining/leaving are no longer displayed.
@@ -84,7 +62,7 @@ var interfaceConfig = {
      * Whether or not the blurred video background for large video should be
      * displayed on browsers that can support it.
      */
-    DISABLE_VIDEO_BACKGROUND: true,
+    DISABLE_VIDEO_BACKGROUND: false,
 
     DISPLAY_WELCOME_FOOTER: true,
     DISPLAY_WELCOME_PAGE_ADDITIONAL_CARD: false,
@@ -109,7 +87,6 @@ var interfaceConfig = {
      */
     HIDE_INVITE_MORE_HEADER: true,
 
-    INITIAL_TOOLBAR_TIMEOUT: 20000,
     JITSI_WATERMARK_LINK: 'https://privus.global',
 
     LANG_DETECTION: true, // Allow i18n to detect the system language
@@ -136,19 +113,19 @@ var interfaceConfig = {
     /**
      * Specify custom URL for downloading android mobile app.
      */
-    MOBILE_DOWNLOAD_LINK_ANDROID: 'https://play.google.com/store/apps/details?id=org.jitsi.meet',
+    MOBILE_DOWNLOAD_LINK_ANDROID: 'https://play.google.com/store/apps/details?id=io.privus.securvid',
 
     /**
      * Specify custom URL for downloading f droid app.
      */
-    MOBILE_DOWNLOAD_LINK_F_DROID: 'https://f-droid.org/en/packages/org.jitsi.meet/',
+   // MOBILE_DOWNLOAD_LINK_F_DROID: 'https://f-droid.org/en/packages/network.privus.bubble/',
 
     /**
      * Specify URL for downloading ios mobile app.
      */
-    MOBILE_DOWNLOAD_LINK_IOS: 'https://itunes.apple.com/us/app/jitsi-meet/id1165103905',
+    MOBILE_DOWNLOAD_LINK_IOS: 'https://apps.apple.com/app/privus-securvid/id1556499668',
 
-    NATIVE_APP_NAME: 'Jitsi Meet',
+    NATIVE_APP_NAME: 'SecurVid',
 
     // Names of browsers which should show a warning stating the current browser
     // has a suboptimal experience. Browsers which are not listed as optimal or
@@ -167,56 +144,33 @@ var interfaceConfig = {
     RECENT_LIST_ENABLED: true,
     REMOTE_THUMBNAIL_RATIO: 1, // 1:1
 
-    SETTINGS_SECTIONS: [ 'devices', 'language', 'moderator', 'profile', 'calendar' ],
+    SETTINGS_SECTIONS: [ 'devices', 'language', 'moderator', 'profile', 'calendar', 'sounds' ],
 
     /**
      * Specify which sharing features should be displayed. If the value is not set
      * all sharing features will be shown. You can set [] to disable all.
      */
-    SHARING_FEATURES: ['email', 'url'],
+     SHARING_FEATURES: ['email', 'url'],
 
     SHOW_BRAND_WATERMARK: true,
 
     /**
-    * Decides whether the chrome extension banner should be rendered on the landing page and during the meeting.
-    * If this is set to false, the banner will not be rendered at all. If set to true, the check for extension(s)
-    * being already installed is done before rendering.
-    */
+     * Decides whether the chrome extension banner should be rendered on the landing page and during the meeting.
+     * If this is set to false, the banner will not be rendered at all. If set to true, the check for extension(s)
+     * being already installed is done before rendering.
+     */
     SHOW_CHROME_EXTENSION_BANNER: false,
 
     SHOW_DEEP_LINKING_IMAGE: false,
     SHOW_JITSI_WATERMARK: true,
-    SHOW_POWERED_BY: true,
+    SHOW_POWERED_BY: false,
     SHOW_PROMOTIONAL_CLOSE_PAGE: false,
 
     /*
      * If indicated some of the error dialogs may point to the support URL for
      * help.
      */
-    SUPPORT_URL: 'https://github.com/privussec/securvid/issues/new',
-
-    TOOLBAR_ALWAYS_VISIBLE: false,
-
-    /**
-     * The name of the toolbar buttons to display in the toolbar, including the
-     * "More actions" menu. If present, the button will display. Exceptions are
-     * "livestreaming" and "recording" which also require being a moderator and
-     * some values in config.js to be enabled. Also, the "profile" button will
-     * not display for users with a JWT.
-     * Notes:
-     * - it's impossible to choose which buttons go in the "More actions" menu
-     * - it's impossible to control the placement of buttons
-     * - 'desktop' controls the "Share your screen" button
-     */
-    TOOLBAR_BUTTONS: [
-        'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
-        'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
-        'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
-        'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
-        'tileview', 'videobackgroundblur', 'download', 'help', 'mute-everyone', 'mute-video-everyone', 'security'
-    ],
-
-    TOOLBAR_TIMEOUT: 4000,
+    SUPPORT_URL: 'https://github.com/privussec/securvid_desktop/issues/new',
 
     // Browsers, in addition to those which do not fully support WebRTC, that
     // are not supported and should show the unsupported browser page.
@@ -230,7 +184,8 @@ var interfaceConfig = {
     // Determines how the video would fit the screen. 'both' would fit the whole
     // screen, 'height' would fit the original video height to the height of the
     // screen, 'width' would fit the original video width to the width of the
-    // screen respecting ratio.
+    // screen respecting ratio, 'nocrop' would make the video as large as
+    // possible and preserve aspect ratio without cropping.
     VIDEO_LAYOUT_FIT: 'both',
 
     /**
@@ -251,35 +206,56 @@ var interfaceConfig = {
      * Specify Firebase dynamic link properties for the mobile apps.
      */
     // MOBILE_DYNAMIC_LINK: {
-    //    APN: 'io.privus.bubble',
+    //    APN: 'io.privus.securvid',
     //    APP_CODE: 'w2atb',
     //    CUSTOM_DOMAIN: undefined,
-    //    IBI: 'io.privus.bubble.ios',
+    //    IBI: 'io.privus.securvid.ios',
     //    ISI: '1565103947'
     // },
 
     /**
      * Specify mobile app scheme for opening the app from the mobile browser.
      */
-     APP_SCHEME: 'io.privus.bubble',
+     APP_SCHEME: 'io.privus.securvid',
 
     /**
      * Specify the Android app package name.
      */
-     ANDROID_APP_PACKAGE: 'network.privus.bubble',
-
-    /**
-     * Override the behavior of some notifications to remain displayed until
-     * explicitly dismissed through a user action. The value is how long, in
-     * milliseconds, those notifications should remain displayed.
-     */
-    // ENFORCE_NOTIFICATION_AUTO_DISMISS_TIMEOUT: 15000,
+    // ANDROID_APP_PACKAGE: 'io.privus.securvid',
 
     // List of undocumented settings
     /**
      INDICATOR_FONT_SIZES
      PHONE_NUMBER_REGEX
     */
+
+    // -----------------DEPRECATED CONFIGS BELOW THIS LINE-----------------------------
+
+    // Connection indicators (
+    // CONNECTION_INDICATOR_AUTO_HIDE_ENABLED,
+    // CONNECTION_INDICATOR_AUTO_HIDE_TIMEOUT,
+    // CONNECTION_INDICATOR_DISABLED) got moved to config.js.
+
+    // Please use disableModeratorIndicator from config.js
+    // DISABLE_FOCUS_INDICATOR: false,
+
+    // Please use defaultLocalDisplayName from config.js
+    // DEFAULT_LOCAL_DISPLAY_NAME: 'me',
+
+    // Please use defaultRemoteDisplayName from config.js
+    // DEFAULT_REMOTE_DISPLAY_NAME: 'Fellow user',
+
+    // Moved to config.js as `toolbarConfig.initialTimeout`.
+    // INITIAL_TOOLBAR_TIMEOUT: 20000,
+
+    // Moved to config.js as `toolbarConfig.alwaysVisible`.
+    // TOOLBAR_ALWAYS_VISIBLE: false,
+
+    // This config was moved to config.js as `toolbarButtons`.
+    // TOOLBAR_BUTTONS: [],
+
+    // Moved to config.js as `toolbarConfig.timeout`.
+    // TOOLBAR_TIMEOUT: 4000,
 
     // Allow all above example options to include a trailing comma and
     // prevent fear when commenting out the last value.

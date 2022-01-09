@@ -1,19 +1,41 @@
 // @flow
+import { batch } from 'react-redux';
 
-import { setFollowMe, setStartMutedPolicy } from '../base/conference';
+
+import {
+    setFollowMe,
+    setStartMutedPolicy,
+    setStartReactionsMuted
+} from '../base/conference';
 import { openDialog } from '../base/dialog';
 import { i18next } from '../base/i18n';
 import { updateSettings } from '../base/settings';
-import { setPrejoinPageVisibility } from '../prejoin/actions';
+import { setScreenshareFramerate } from '../screen-share/actions';
 
 import {
     SET_AUDIO_SETTINGS_VISIBILITY,
     SET_VIDEO_SETTINGS_VISIBILITY
 } from './actionTypes';
-import { SettingsDialog } from './components';
-import { getMoreTabProps, getProfileTabProps } from './functions';
+import { LogoutDialog, SettingsDialog } from './components';
+import {
+    getModeratorTabProps,
+    getMoreTabProps,
+    getProfileTabProps,
+    getSoundsTabProps
+} from './functions';
 
 declare var APP: Object;
+
+/**
+ * Opens {@code LogoutDialog}.
+ *
+ * @param {Function} onLogout - The event in {@code LogoutDialog} that should be
+ *  enabled on click.
+ * @returns {Function}
+ */
+export function openLogoutDialog(onLogout: Function) {
+    return openDialog(LogoutDialog, { onLogout });
+}
 
 /**
  * Opens {@code SettingsDialog}.
@@ -27,7 +49,7 @@ export function openSettingsDialog(defaultTab: string) {
 }
 
 /**
- * Sets the visiblity of the audio settings.
+ * Sets the visibility of the audio settings.
  *
  * @param {boolean} value - The new value.
  * @returns {Function}
@@ -40,7 +62,7 @@ function setAudioSettingsVisibility(value: boolean) {
 }
 
 /**
- * Sets the visiblity of the video settings.
+ * Sets the visibility of the video settings.
  *
  * @param {boolean} value - The new value.
  * @returns {Function}
@@ -62,31 +84,67 @@ export function submitMoreTab(newState: Object): Function {
     return (dispatch, getState) => {
         const currentState = getMoreTabProps(getState());
 
+        const showPrejoinPage = newState.showPrejoinPage;
+
+        if (showPrejoinPage !== currentState.showPrejoinPage) {
+            dispatch(updateSettings({
+                userSelectedSkipPrejoin: !showPrejoinPage
+            }));
+        }
+
+        const enabledNotifications = newState.enabledNotifications;
+
+        if (enabledNotifications !== currentState.enabledNotifications) {
+            dispatch(updateSettings({
+                userSelectedNotifications: {
+                    ...getState()['features/base/settings'].userSelectedNotifications,
+                    ...enabledNotifications
+                }
+            }));
+        }
+
+        if (newState.currentLanguage !== currentState.currentLanguage) {
+            i18next.changeLanguage(newState.currentLanguage);
+        }
+
+        if (newState.currentFramerate !== currentState.currentFramerate) {
+            const frameRate = parseInt(newState.currentFramerate, 10);
+
+            dispatch(setScreenshareFramerate(frameRate));
+        }
+
+        if (newState.hideSelfView !== currentState.hideSelfView) {
+            dispatch(updateSettings({ disableSelfView: newState.hideSelfView }));
+        }
+    };
+}
+
+/**
+ * Submits the settings from the "Moderator" tab of the settings dialog.
+ *
+ * @param {Object} newState - The new settings.
+ * @returns {Function}
+ */
+export function submitModeratorTab(newState: Object): Function {
+    return (dispatch, getState) => {
+        const currentState = getModeratorTabProps(getState());
+
         if (newState.followMeEnabled !== currentState.followMeEnabled) {
             dispatch(setFollowMe(newState.followMeEnabled));
         }
 
-        const showPrejoinPage = newState.showPrejoinPage;
-
-        if (showPrejoinPage !== currentState.showPrejoinPage) {
-            // The 'showPrejoin' flag starts as 'true' on every new session.
-            // This prevents displaying the prejoin page when the user re-enables it.
-            if (showPrejoinPage && getState()['features/prejoin']?.showPrejoin) {
-                dispatch(setPrejoinPageVisibility(false));
-            }
-            dispatch(updateSettings({
-                userSelectedSkipPrejoin: !showPrejoinPage
-            }));
+        if (newState.startReactionsMuted !== currentState.startReactionsMuted) {
+            batch(() => {
+                // updating settings we want to update and backend (notify the rest of the participants)
+                dispatch(setStartReactionsMuted(newState.startReactionsMuted, true));
+                dispatch(updateSettings({ soundsReactions: !newState.startReactionsMuted }));
+            });
         }
 
         if (newState.startAudioMuted !== currentState.startAudioMuted
             || newState.startVideoMuted !== currentState.startVideoMuted) {
             dispatch(setStartMutedPolicy(
                 newState.startAudioMuted, newState.startVideoMuted));
-        }
-
-        if (newState.currentLanguage !== currentState.currentLanguage) {
-            i18next.changeLanguage(newState.currentLanguage);
         }
     };
 }
@@ -112,7 +170,40 @@ export function submitProfileTab(newState: Object): Function {
 }
 
 /**
- * Toggles the visiblity of the audio settings.
+ * Submits the settings from the "Sounds" tab of the settings dialog.
+ *
+ * @param {Object} newState - The new settings.
+ * @returns {Function}
+ */
+export function submitSoundsTab(newState: Object): Function {
+    return (dispatch, getState) => {
+        const currentState = getSoundsTabProps(getState());
+        const shouldNotUpdateReactionSounds = getModeratorTabProps(getState()).startReactionsMuted;
+        const shouldUpdate = (newState.soundsIncomingMessage !== currentState.soundsIncomingMessage)
+            || (newState.soundsParticipantJoined !== currentState.soundsParticipantJoined)
+            || (newState.soundsParticipantLeft !== currentState.soundsParticipantLeft)
+            || (newState.soundsTalkWhileMuted !== currentState.soundsTalkWhileMuted)
+            || (newState.soundsReactions !== currentState.soundsReactions);
+
+        if (shouldUpdate) {
+            const settingsToUpdate = {
+                soundsIncomingMessage: newState.soundsIncomingMessage,
+                soundsParticipantJoined: newState.soundsParticipantJoined,
+                soundsParticipantLeft: newState.soundsParticipantLeft,
+                soundsTalkWhileMuted: newState.soundsTalkWhileMuted,
+                soundsReactions: newState.soundsReactions
+            };
+
+            if (shouldNotUpdateReactionSounds) {
+                delete settingsToUpdate.soundsReactions;
+            }
+            dispatch(updateSettings(settingsToUpdate));
+        }
+    };
+}
+
+/**
+ * Toggles the visibility of the audio settings.
  *
  * @returns {void}
  */
@@ -125,7 +216,7 @@ export function toggleAudioSettings() {
 }
 
 /**
- * Toggles the visiblity of the video settings.
+ * Toggles the visibility of the video settings.
  *
  * @returns {void}
  */

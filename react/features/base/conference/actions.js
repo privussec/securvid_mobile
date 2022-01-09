@@ -6,14 +6,19 @@ import {
     createStartMutedConfigurationEvent,
     sendAnalytics
 } from '../../analytics';
-import { getName } from '../../app/functions';
 import { endpointMessageReceived } from '../../subtitles';
+import { getReplaceParticipant } from '../config/functions';
 import { JITSI_CONNECTION_CONFERENCE_KEY } from '../connection';
 import { JitsiConferenceEvents } from '../lib-jitsi-meet';
-import { setAudioMuted, setVideoMuted } from '../media';
+import {
+    MEDIA_TYPE,
+    setAudioMuted,
+    setAudioUnmutePermissions,
+    setVideoMuted,
+    setVideoUnmutePermissions
+} from '../media';
 import {
     dominantSpeakerChanged,
-    getLocalParticipant,
     getNormalizedDisplayName,
     participantConnectionStatusChanged,
     participantKicked,
@@ -22,18 +27,21 @@ import {
     participantRoleChanged,
     participantUpdated
 } from '../participants';
-import { getLocalTracks, trackAdded, trackRemoved } from '../tracks';
 import {
-    getBackendSafePath,
-    getBackendSafeRoomName,
-    getJitsiMeetGlobalNS
-} from '../util';
+    destroyLocalTracks,
+    getLocalTracks,
+    replaceLocalTrack,
+    trackAdded,
+    trackRemoved
+} from '../tracks';
+import { getBackendSafeRoomName } from '../util';
 
 import {
     AUTH_STATUS_CHANGED,
     CONFERENCE_FAILED,
     CONFERENCE_JOINED,
     CONFERENCE_LEFT,
+    CONFERENCE_LOCAL_SUBJECT_CHANGED,
     CONFERENCE_SUBJECT_CHANGED,
     CONFERENCE_TIMESTAMP_CHANGED,
     CONFERENCE_UNIQUE_ID_SET,
@@ -42,6 +50,7 @@ import {
     DATA_CHANNEL_OPENED,
     KICKED_OUT,
     LOCK_STATE_CHANGED,
+    NON_PARTICIPANT_MESSAGE_RECEIVED,
     P2P_STATUS_CHANGED,
     SEND_TONES,
     SET_FOLLOW_ME,
@@ -49,7 +58,8 @@ import {
     SET_PASSWORD_FAILED,
     SET_ROOM,
     SET_PENDING_SUBJECT_CHANGE,
-    SET_START_MUTED_POLICY
+    SET_START_MUTED_POLICY,
+    SET_START_REACTIONS_MUTED
 } from './actionTypes';
 import {
     AVATAR_URL_COMMAND,
@@ -60,6 +70,7 @@ import {
     _addLocalTracksToConference,
     commonUserJoinedHandling,
     commonUserLeftHandling,
+    getConferenceOptions,
     getCurrentConference,
     sendLocalParticipant
 } from './functions';
@@ -72,10 +83,11 @@ declare var APP: Object;
  *
  * @param {JitsiConference} conference - The JitsiConference instance.
  * @param {Dispatch} dispatch - The Redux dispatch function.
+ * @param {Object} state - The Redux state.
  * @private
  * @returns {void}
  */
-function _addConferenceListeners(conference, dispatch) {
+function _addConferenceListeners(conference, dispatch, state) {
     // A simple logger for conference errors received through
     // the listener. These errors are not handled now, but logged.
     conference.on(JitsiConferenceEvents.CONFERENCE_ERROR,
@@ -118,13 +130,12 @@ function _addConferenceListeners(conference, dispatch) {
     conference.on(
         JitsiConferenceEvents.STARTED_MUTED,
         () => {
-            const audioMuted = Boolean(conference.startAudioMuted);
-            const videoMuted = Boolean(conference.startVideoMuted);
+            const audioMuted = Boolean(conference.isStartAudioMuted());
+            const videoMuted = Boolean(conference.isStartVideoMuted());
+            const localTracks = getLocalTracks(state['features/base/tracks']);
 
-            sendAnalytics(createStartMutedConfigurationEvent(
-                'remote', audioMuted, videoMuted));
-            logger.log(`Start muted: ${audioMuted ? 'audio, ' : ''}${
-                videoMuted ? 'video' : ''}`);
+            sendAnalytics(createStartMutedConfigurationEvent('remote', audioMuted, videoMuted));
+            logger.log(`Start muted: ${audioMuted ? 'audio, ' : ''}${videoMuted ? 'video' : ''}`);
 
             // XXX Jicofo tells lib-jitsi-meet to start with audio and/or video
             // muted i.e. Jicofo expresses an intent. Lib-jitsi-meet has turned
@@ -136,6 +147,28 @@ function _addConferenceListeners(conference, dispatch) {
             // acting on Jicofo's intent without the app's knowledge.
             dispatch(setAudioMuted(audioMuted));
             dispatch(setVideoMuted(videoMuted));
+
+            // Remove the tracks from peerconnection as well.
+            for (const track of localTracks) {
+                const trackType = track.jitsiTrack.getType();
+
+                // Do not remove the audio track on RN. Starting with iOS 15 it will fail to unmute otherwise.
+                if ((audioMuted && trackType === MEDIA_TYPE.AUDIO && navigator.product !== 'ReactNative')
+                        || (videoMuted && trackType === MEDIA_TYPE.VIDEO)) {
+                    dispatch(replaceLocalTrack(track.jitsiTrack, null, conference));
+                }
+            }
+        });
+
+    conference.on(
+        JitsiConferenceEvents.AUDIO_UNMUTE_PERMISSIONS_CHANGED,
+        disableAudioMuteChange => {
+            dispatch(setAudioUnmutePermissions(disableAudioMuteChange));
+        });
+    conference.on(
+        JitsiConferenceEvents.VIDEO_UNMUTE_PERMISSIONS_CHANGED,
+        disableVideoMuteChange => {
+            dispatch(setVideoUnmutePermissions(disableVideoMuteChange));
         });
 
     // Dispatches into features/base/tracks follow:
@@ -155,6 +188,8 @@ function _addConferenceListeners(conference, dispatch) {
             }
         });
 
+    conference.on(JitsiConferenceEvents.TRACK_UNMUTE_REJECTED, track => dispatch(destroyLocalTracks(track)));
+
     // Dispatches into features/base/participants follow:
     conference.on(
         JitsiConferenceEvents.DISPLAY_NAME_CHANGED,
@@ -166,11 +201,15 @@ function _addConferenceListeners(conference, dispatch) {
 
     conference.on(
         JitsiConferenceEvents.DOMINANT_SPEAKER_CHANGED,
-        id => dispatch(dominantSpeakerChanged(id, conference)));
+        (dominant, previous) => dispatch(dominantSpeakerChanged(dominant, previous, conference)));
 
     conference.on(
         JitsiConferenceEvents.ENDPOINT_MESSAGE_RECEIVED,
         (...args) => dispatch(endpointMessageReceived(...args)));
+
+    conference.on(
+        JitsiConferenceEvents.NON_PARTICIPANT_MESSAGE_RECEIVED,
+        (...args) => dispatch(nonParticipantMessageReceived(...args)));
 
     conference.on(
         JitsiConferenceEvents.PARTICIPANT_CONN_STATUS_CHANGED,
@@ -353,7 +392,7 @@ export function conferenceUniqueIdSet(conference: Object) {
  * the local participant will (try to) join.
  * @returns {Function}
  */
-function _conferenceWillJoin(conference: Object) {
+export function _conferenceWillJoin(conference: Object) {
     return (dispatch: Dispatch<any>, getState: Function) => {
         const localTracks
             = getLocalTracks(getState()['features/base/tracks'])
@@ -408,9 +447,11 @@ export function conferenceWillLeave(conference: Object) {
 /**
  * Initializes a new conference.
  *
+ * @param {string} overrideRoom - Override the room to join, instead of taking it
+ * from Redux.
  * @returns {Function}
  */
-export function createConference() {
+export function createConference(overrideRoom?: string) {
     return (dispatch: Function, getState: Function) => {
         const state = getState();
         const { connection, locationURL } = state['features/base/connection'];
@@ -425,22 +466,20 @@ export function createConference() {
             throw new Error('Cannot join a conference without a room name!');
         }
 
-        const config = state['features/base/config'];
-        const { tenant } = state['features/base/jwt'];
-        const { email, name: nick } = getLocalParticipant(state);
+        // XXX: revisit this.
+        // Hide the custom domain in the room name.
+        const tmp = overrideRoom || room;
+        let _room = getBackendSafeRoomName(tmp);
 
-        const conference
-            = connection.initJitsiConference(
+        if (tmp.domain) {
+            // eslint-disable-next-line no-new-wrappers
+            _room = new String(tmp);
 
-                getBackendSafeRoomName(room), {
-                    ...config,
-                    applicationName: getName(),
-                    getWiFiStatsMethod: getJitsiMeetGlobalNS().getWiFiStats,
-                    confID: `${locationURL.host}${getBackendSafePath(locationURL.pathname)}`,
-                    siteID: tenant,
-                    statisticsDisplayName: config.enableDisplayNameInStats ? nick : undefined,
-                    statisticsId: config.enableEmailInStats ? email : undefined
-                });
+            // $FlowExpectedError
+            _room.domain = tmp.domain;
+        }
+
+        const conference = connection.initJitsiConference(_room, getConferenceOptions(state));
 
         connection[JITSI_CONNECTION_CONFERENCE_KEY] = conference;
 
@@ -448,11 +487,13 @@ export function createConference() {
 
         dispatch(_conferenceWillJoin(conference));
 
-        _addConferenceListeners(conference, dispatch);
+        _addConferenceListeners(conference, dispatch, state);
 
         sendLocalParticipant(state, conference);
 
-        conference.join(password);
+        const replaceParticipant = getReplaceParticipant(state);
+
+        conference.join(password, replaceParticipant);
     };
 }
 
@@ -469,8 +510,10 @@ export function checkIfCanJoin() {
         const { authRequired, password }
             = getState()['features/base/conference'];
 
+        const replaceParticipant = getReplaceParticipant(getState());
+
         authRequired && dispatch(_conferenceWillJoin(authRequired));
-        authRequired && authRequired.join(password);
+        authRequired && authRequired.join(password, replaceParticipant);
     };
 }
 
@@ -526,6 +569,25 @@ export function lockStateChanged(conference: Object, locked: boolean) {
         type: LOCK_STATE_CHANGED,
         conference,
         locked
+    };
+}
+
+/**
+ * Signals that a non participant endpoint message has been received.
+ *
+ * @param {string} id - The resource id of the sender.
+ * @param {Object} json - The json carried by the endpoint message.
+ * @returns {{
+ *      type: NON_PARTICIPANT_MESSAGE_RECEIVED,
+ *      id: Object,
+ *      json: Object
+ * }}
+ */
+export function nonParticipantMessageReceived(id: String, json: Object) {
+    return {
+        type: NON_PARTICIPANT_MESSAGE_RECEIVED,
+        id,
+        json
     };
 }
 
@@ -602,6 +664,24 @@ export function setFollowMe(enabled: boolean) {
     return {
         type: SET_FOLLOW_ME,
         enabled
+    };
+}
+
+/**
+ * Enables or disables the Mute reaction sounds feature.
+ *
+ * @param {boolean} muted - Whether or not reaction sounds should be muted for all participants.
+ * @param {boolean} updateBackend - Whether or not the moderator should notify all participants for the new setting.
+ * @returns {{
+ *     type: SET_START_REACTIONS_MUTED,
+ *     muted: boolean
+ * }}
+ */
+export function setStartReactionsMuted(muted: boolean, updateBackend: boolean = false) {
+    return {
+        type: SET_START_REACTIONS_MUTED,
+        muted,
+        updateBackend
     };
 }
 
@@ -713,7 +793,7 @@ export function setStartMutedPolicy(
 }
 
 /**
- * Changing conference subject.
+ * Sets the conference subject.
  *
  * @param {string} subject - The new subject.
  * @returns {void}
@@ -730,5 +810,21 @@ export function setSubject(subject: string) {
                 subject
             });
         }
+    };
+}
+
+/**
+ * Sets the conference local subject.
+ *
+ * @param {string} localSubject - The new local subject.
+ * @returns {{
+ *     type: CONFERENCE_LOCAL_SUBJECT_CHANGED,
+ *     localSubject: string
+ * }}
+ */
+export function setLocalSubject(localSubject: string) {
+    return {
+        type: CONFERENCE_LOCAL_SUBJECT_CHANGED,
+        localSubject
     };
 }

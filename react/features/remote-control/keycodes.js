@@ -1,6 +1,7 @@
 /**
  * Enumerates the supported keys.
  * NOTE: The maps represents physical keys on the keyboard, not chars.
+ *
  * @readonly
  * @enum {string}
  */
@@ -69,9 +70,9 @@ export const KEYS = {
 
 /* eslint-disable max-len */
 /**
- * Mapping between the key codes and keys deined in KEYS.
+ * Mapping between the key codes and keys defined in KEYS.
  * The mappings are based on
- * https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode#Specifications
+ * https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode#Specifications.
  */
 /* eslint-enable max-len */
 const keyCodeToKey = {
@@ -141,14 +142,14 @@ const keyCodeToKey = {
 };
 
 /**
- * Generate codes for digit keys (0-9)
+ * Generate codes for digit keys (0-9).
  */
 for (let i = 0; i < 10; i++) {
     keyCodeToKey[i + 48] = `${i}`;
 }
 
 /**
- * Generate codes for letter keys (a-z)
+ * Generate codes for letter keys (a-z).
  */
 for (let i = 0; i < 26; i++) {
     const keyCode = i + 65;
