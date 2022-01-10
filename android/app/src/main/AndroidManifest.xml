@@ -1,6 +1,6 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.jitsi.meet"
+    package="io.privus.securvid"
     android:installLocation="auto">
   <application
       android:allowBackup="true"
@@ -17,7 +17,7 @@
         android:exported="true"
         android:label="@string/app_name"
         android:launchMode="singleTask"
-        android:name=".MainActivity"
+        android:name="io.privus.securvid.MainActivity"
         android:resizeableActivity="true"
         android:supportsPictureInPicture="true"
         android:windowSoftInputMode="adjustResize">
@@ -30,15 +30,13 @@
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.BROWSABLE" />
         <category android:name="android.intent.category.DEFAULT" />
-        <data android:host="alpha.jitsi.net" android:scheme="https" />
-        <data android:host="beta.meet.jit.si" android:scheme="https" />
-        <data android:host="meet.jit.si" android:scheme="https" />
-      </intent-filter>
+        <data android:host="sv.privus.io" android:scheme="https" />
+       </intent-filter>
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.BROWSABLE" />
         <category android:name="android.intent.category.DEFAULT" />
-        <data android:scheme="org.jitsi.meet" />
+        <data android:scheme="io.privus.securvid" />
       </intent-filter>
     </activity>
   </application>

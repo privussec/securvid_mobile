@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".JitsiMeetActivity">
+    tools:context="io.privus.securvid.sdk.JitsiMeetActivity">
     <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="org.jitsi.meet.sdk.JitsiMeetFragment"
+        android:name="io.privus.securvid.sdk.JitsiMeetFragment"
         android:id="@+id/jitsiFragment"/>
 </FrameLayout>

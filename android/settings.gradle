@@ -1,4 +1,4 @@
-rootProject.name = 'jitsi-meet'
+rootProject.name = 'securvid'
 
 include ':app', ':sdk'
 include ':react-native-amplitude'

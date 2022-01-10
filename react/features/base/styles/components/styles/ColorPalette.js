@@ -20,7 +20,7 @@ export const ColorPalette = {
     black: BLACK,
     blackBlue: 'rgb(0, 3, 6)',
     blue: '#142b36',
-    blueHighlight: '#698490',
+    blueHighlight: '#142b36',
     buttonUnderlay: '#495258',
     darkGrey: '#555555',
     darkBackground: 'rgb(19,21,25)',
